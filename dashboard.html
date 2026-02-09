@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - Arisan Luxe Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        html, body { height: 100%; overflow-x: hidden; overflow-y: auto; scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 180px; }
+
+        /* Header Luxe */
+        .main-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+            padding: 50px 25px 90px 25px;
+            border-radius: 0 0 50px 50px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.2);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px; padding: 22px; margin-top: 25px;
+        }
+
+        /* Section Styling */
+        .section-title {
+            font-size: 11px; font-weight: 900; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 2px;
+            margin: 25px 25px 15px 25px; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Grid Menu */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px; }
+        
+        .btn-menu {
+            background: white; border-radius: 24px; padding: 18px 10px;
+            text-decoration: none; display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        .btn-menu:active { transform: scale(0.92); background: #f1f5f9; }
+        
+        .icon-box {
+            width: 45px; height: 45px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px; font-size: 18px;
+        }
+
+        .menu-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; text-align: center; line-height: 1.2; }
+
+        /* Logout Button */
+        .btn-logout {
+            margin: 30px 20px 0 20px; padding: 18px;
+            background: #fff1f2; color: #e11d48; border-radius: 25px;
+            text-align: center; font-weight: 800; font-size: 11px;
+            text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;
+            border: 1px solid #ffe4e6;
+        }
+
+        /* Nav Bawah */
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            height: 75px; border-radius: 30px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12); z-index: 9999;
+        }
+        .nav-item { text-decoration: none; color: #94a3b8; text-align: center; font-size: 8px; font-weight: 800; }
+        .nav-item.active { color: #4f46e5; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-size: 10px; font-weight: 800; opacity: 0.6; letter-spacing: 3px;">OFFICIAL APP</span>
+                <h1 style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900; letter-spacing: -1px;">ARISAN</h1>
+            </div>
+            <a href="profil.html" style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 18px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3);">
+                <i class="fa-solid fa-user text-white"></i>
+            </a>
+        </div>
+
+        <div class="glass-card">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fa-solid fa-calendar-check text-amber-400 text-2xl"></i>
+                <div>
+                    <div id="displayPeriode" style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Memuat...</div>
+                    <div id="displayWaktu" style="font-size: 10px; font-weight: 600; opacity: 0.7;">Sync Server...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 25px; margin-top: -45px;">
+        <div style="background: white; border-radius: 28px; padding: 20px; shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #10b981;">
+            <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Menang</p>
+            <h2 id="statMenang" style="font-size: 28px; font-weight: 900; color: #1e293b; margin: 0;">0</h2>
+        </div>
+        <div style="background: white; border-radius: 28px; padding: 20px; shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #f43f5e;">
+            <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Antri</p>
+            <h2 id="statBelum" style="font-size: 28px; font-weight: 900; color: #1e293b; margin: 0;">0</h2>
+        </div>
+    </div>
+
+    <div class="section-title">
+        <i class="fa-solid fa-star text-indigo-500"></i> Menu Utama
+    </div>
+    <div class="menu-grid">
+        <a href="bayar.html" class="btn-menu">
+            <div class="icon-box" style="background: #eef2ff; color: #4f46e5;"><i class="fa-solid fa-wallet"></i></div>
+            <span class="menu-label">Bayar Kas</span>
+        </a>
+        <a href="anggota.html" class="btn-menu">
+            <div class="icon-box" style="background: #f0fdf4; color: #10b981;"><i class="fa-solid fa-users"></i></div>
+            <span class="menu-label">Anggota</span>
+        </a>
+        <a href="antrian.html" class="btn-menu">
+            <div class="icon-box" style="background: #fff7ed; color: #f59e0b;"><i class="fa-solid fa-clock"></i></div>
+            <span class="menu-label">Belum Win</span>
+        </a>
+        <a href="pemenang.html" class="btn-menu">
+            <div class="icon-box" style="background: #ecfdf5; color: #059669;"><i class="fa-solid fa-crown"></i></div>
+            <span class="menu-label">Pemenang</span>
+        </a>
+        <a href="live.html" class="btn-menu">
+            <div class="icon-box" style="background: #fff1f2; color: #e11d48;"><i class="fa-solid fa-tower-broadcast"></i></div>
+            <span class="menu-label">Live Undi</span>
+        </a>
+        <a href="aturan.html" class="btn-menu">
+            <div class="icon-box" style="background: #f8fafc; color: #64748b;"><i class="fa-solid fa-book-open"></i></div>
+            <span class="menu-label">Aturan</span>
+        </a>
+    </div>
+
+    <div class="section-title">
+        <i class="fa-solid fa-shield-halved text-rose-500"></i> Admin Panel
+    </div>
+    <div class="menu-grid">
+        <a href="tambah_anggota.html" class="btn-menu">
+            <div class="icon-box" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-user-plus"></i></div>
+            <span class="menu-label">Tambah User</span>
+        </a>
+        <a href="konfirmasi.html" class="btn-menu">
+            <div class="icon-box" style="background: #eff6ff; color: #2563eb;"><i class="fa-solid fa-clipboard-check"></i></div>
+            <span class="menu-label">Verifikasi</span>
+        </a>
+        <a href="undian.html" class="btn-menu">
+            <div class="icon-box" style="background: #faf5ff; color: #a855f7;"><i class="fa-solid fa-shuffle"></i></div>
+            <span class="menu-label">Buat Undian</span>
+        </a>
+        <a href="setting.html" class="btn-menu">
+            <div class="icon-box" style="background: #f1f5f9; color: #334155;"><i class="fa-solid fa-stopwatch"></i></div>
+            <span class="menu-label">Set Waktu</span>
+        </a>
+    </div>
+
+    <a href="index.html" class="btn-logout">
+        <i class="fa-solid fa-power-off"></i> KELUAR SISTEM
+    </a>
+
+    <div class="nav-bar">
+        <a href="dashboard.html" class="nav-item active"><i class="fa-solid fa-house"></i>HOME</a>
+        <a href="bayar.html" class="nav-item"><i class="fa-solid fa-hand-holding-dollar"></i>BAYAR</a>
+        <a href="antrian.html" class="nav-item"><i class="fa-solid fa-clock"></i>ANTRIAN</a>
+        <a href="setting.html" class="nav-item"><i class="fa-solid fa-user-shield"></i>ADMIN</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
+            authDomain: "arisan-17397.firebaseapp.com",
+            projectId: "arisan-17397",
+            storageBucket: "arisan-17397.firebasestorage.app",
+            messagingSenderId: "12736886742",
+            appId: "1:12736886742:web:b6da8d1bd74ea5ae839677"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        onSnapshot(doc(db, "sistem", "jadwal"), (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                document.getElementById('displayPeriode').innerText = "Undian Pemenang Ke-" + data.periode;
+                document.getElementById('displayWaktu').innerText = data.tanggal + " • " + data.jam + " WIB";
+            }
+        });
+
+        onSnapshot(collection(db, "anggota"), (snapshot) => {
+            let m = 0; let b = 0;
+            snapshot.forEach((d) => { d.data().sudahMenang ? m++ : b++; });
+            document.getElementById('statMenang').innerText = m;
+            document.getElementById('statBelum').innerText = b;
+        });
+    </script>
+</body>
+</html>

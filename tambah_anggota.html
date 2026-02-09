@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Input Anggota - Arisan Luxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 50px; color: #334155; }
+
+        .main-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+            padding: 50px 25px 80px 25px;
+            border-radius: 0 0 50px 50px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15);
+        }
+
+        .form-card {
+            background: white; border-radius: 35px; padding: 30px 25px;
+            margin: -40px 20px 20px; border: 1px solid #f1f5f9;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+        }
+
+        #previewPhoto { 
+            width: 110px; height: 110px; object-fit: cover; 
+            border-radius: 35px; border: 4px solid white; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); background: #f8fafc;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-left: 5px; letter-spacing: 1px; }
+        
+        .input-box {
+            display: flex; align-items: center; gap: 12px; background: #f8fafc;
+            padding: 14px 18px; border-radius: 20px; border: 1px solid #f1f5f9; margin-top: 6px;
+            transition: 0.3s;
+        }
+        .input-box:focus-within { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 102, 241, 0.05); }
+        .input-box input { background: transparent; border: none; outline: none; width: 100%; font-size: 14px; font-weight: 700; color: #1e293b; }
+
+        .btn-save {
+            background: #1e293b; color: white; width: 100%; padding: 18px;
+            border-radius: 22px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 12px; transition: 0.3s; border: none;
+            box-shadow: 0 10px 25px rgba(30, 41, 59, 0.2);
+        }
+        .btn-save:active { transform: scale(0.96); }
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        <div class="flex items-center gap-4">
+            <a href="anggota.html" class="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center text-white"><i class="fa-solid fa-chevron-left"></i></a>
+            <div>
+                <h2 id="titlePage" class="font-black text-lg uppercase tracking-tight">Tambah Anggota</h2>
+                <p class="text-[9px] font-bold text-indigo-200 uppercase tracking-[2px]">Management Database</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="flex flex-col items-center mb-8">
+            <div class="relative">
+                <img id="previewPhoto" src="https://ui-avatars.com/api/?name=?&background=eef2ff&color=4f46e5" alt="Profil">
+                <label for="photoInput" class="absolute -bottom-2 -right-2 bg-emerald-500 text-white w-9 h-9 rounded-xl flex items-center justify-center border-4 border-white cursor-pointer shadow-lg">
+                    <i class="fa-solid fa-camera text-xs"></i>
+                </label>
+            </div>
+            <input type="file" id="photoInput" class="hidden" accept="image/*">
+        </div>
+
+        <form id="memberForm">
+            <div class="input-group">
+                <label>Nama Lengkap Anggota</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-signature text-slate-300"></i>
+                    <input type="text" id="nama" placeholder="Contoh: Andi Wijaya" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Nomor WhatsApp</label>
+                <div class="input-box">
+                    <i class="fa-brands fa-whatsapp text-slate-300"></i>
+                    <input type="number" id="whatsapp" placeholder="62812xxx" required>
+                </div>
+            </div>
+
+            <div class="input-group mb-8">
+                <label>Domisili / Alamat</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-location-dot text-slate-300"></i>
+                    <input type="text" id="alamat" placeholder="Contoh: Jakarta Selatan" required>
+                </div>
+            </div>
+
+            <button type="button" id="btnAction" class="btn-save">
+                <i class="fa-solid fa-user-plus mr-2"></i> Simpan Anggota
+            </button>
+        </form>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
+            authDomain: "arisan-17397.firebaseapp.com",
+            projectId: "arisan-17397",
+            storageBucket: "arisan-17397.firebasestorage.app",
+            messagingSenderId: "12736886742",
+            appId: "1:12736886742:web:b6da8d1bd74ea5ae839677"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('id');
+        const btnAction = document.getElementById('btnAction');
+        const photoInput = document.getElementById('photoInput');
+        const previewPhoto = document.getElementById('previewPhoto');
+        let base64Photo = "";
+
+        // Preview & Convert Foto
+        photoInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    base64Photo = reader.result;
+                    previewPhoto.src = base64Photo;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Mode Edit: Load Data
+        if (editId) {
+            document.getElementById('titlePage').innerText = "Edit Anggota";
+            btnAction.innerHTML = '<i class="fa-solid fa-user-pen mr-2"></i> Update Anggota';
+            
+            (async () => {
+                const docRef = doc(db, "anggota", editId);
+                const snap = await getDoc(docRef);
+                if (snap.exists()) {
+                    const d = snap.data();
+                    document.getElementById('nama').value = d.nama || "";
+                    document.getElementById('whatsapp').value = d.whatsapp || "";
+                    document.getElementById('alamat').value = d.alamat || "";
+                    if (d.foto) {
+                        previewPhoto.src = d.foto;
+                        base64Photo = d.foto;
+                    }
+                }
+            })();
+        }
+
+        // Action Simpan/Update
+        btnAction.onclick = async () => {
+            const nama = document.getElementById('nama').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const alamat = document.getElementById('alamat').value;
+
+            if(!nama || !whatsapp || !alamat) return alert("Harap lengkapi formulir!");
+
+            btnAction.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...';
+            btnAction.disabled = true;
+
+            try {
+                const memberData = {
+                    nama: nama,
+                    whatsapp: whatsapp,
+                    alamat: alamat,
+                    foto: base64Photo,
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (editId) {
+                    await updateDoc(doc(db, "anggota", editId), memberData);
+                    alert("Berhasil diperbarui!");
+                } else {
+                    await addDoc(collection(db, "anggota"), {
+                        ...memberData,
+                        statusBayar: false,
+                        sudahMenang: false,
+                        dibayar: 0,
+                        createdAt: new Date().toISOString()
+                    });
+                    alert("Berhasil ditambahkan!");
+                }
+                window.location.href = "anggota.html";
+            } catch (e) {
+                alert("Gagal: " + e.message);
+                btnAction.disabled = false;
+                btnAction.innerHTML = '<i class="fa-solid fa-user-plus mr-2"></i> Simpan Anggota';
+            }
+        };
+    </script>
+        <nav class="nav-bar">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            HOME
+        </a>
+        <a href="anggota.html" class="nav-item active">
+            <i class="fa-solid fa-users"></i>
+            ANGGOTA
+        </a>
+        <a href="bayar.html" class="nav-item">
+            <i class="fa-solid fa-wallet"></i>
+            BAYAR
+        </a>
+        <a href="setting.html" class="nav-item">
+            <i class="fa-solid fa-gear"></i>
+            SETTING
+        </a>
+    </nav>
+
+    <style>
+        /* CSS Navigasi (Pastikan sudah ada di bagian style) */
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            height: 75px; border-radius: 30px; display: flex; justify-content: space-around;
+            align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.12); z-index: 9999;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .nav-item { text-decoration: none; color: #94a3b8; text-align: center; font-size: 8px; font-weight: 800; flex: 1; }
+        .nav-item.active { color: #4f46e5; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+
+</body>
+</html>

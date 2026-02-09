@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - Arisan Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #F8FAFC;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 30px;
+        }
+        .card {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+        .input-box {
+            background: #F1F5F9;
+            border-radius: 18px;
+            padding: 12px 18px;
+            margin-bottom: 12px;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .input-box:focus-within {
+            border-color: #8B0000;
+            background: white;
+        }
+        .input-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .btn-login {
+            background: linear-gradient(180deg, #8B0000 0%, #660000 100%);
+            color: white;
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 16px;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(139, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            bottom: 15px;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-black text-slate-800 tracking-tight">Masuk Akun</h1>
+            <p class="text-slate-400 font-semibold text-sm mt-1">Silakan login ke sistem arisan</p>
+        </div>
+
+        <div class="card">
+            <form id="loginForm" onsubmit="return false;">
+                <div class="input-box">
+                    <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Email Anda</div>
+                    <input type="email" id="email" placeholder="email@contoh.com" required>
+                </div>
+
+                <div class="input-box">
+                    <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Kata Sandi</div>
+                    <input type="password" id="password" placeholder="Masukkan sandi..." required>
+                    <i class="fa-solid fa-eye-slash toggle-password" id="togglePassword"></i>
+                </div>
+
+                <button type="submit" id="btnLogin" class="btn-login uppercase">
+                    Masuk Sekarang
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <p class="text-slate-400 text-xs font-bold">Belum punya akun? <a href="daftar.html" class="text-red-700">Daftar</a></p>
+            </div>
+            
+            <p id="msg" class="text-[11px] font-bold text-center mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
+            authDomain: "arisan-17397.firebaseapp.com",
+            projectId: "arisan-17397",
+            storageBucket: "arisan-17397.firebasestorage.app",
+            messagingSenderId: "12736886742",
+            appId: "1:12736886742:web:b6da8d1bd74ea5ae839677"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Fitur Show/Hide Password (Mata)
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        });
+
+        // Proses Login
+        const btnLogin = document.getElementById('btnLogin');
+        const msg = document.getElementById('msg');
+
+        btnLogin.onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if(!email || !password) {
+                alert("Isi email dan password!");
+                return;
+            }
+
+            msg.classList.add('hidden');
+            btnLogin.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+            btnLogin.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // Simpan email untuk membedakan admin di dashboard
+                localStorage.setItem("userEmail", email);
+                
+                msg.innerText = "Login Berhasil! Membuka Dashboard...";
+                msg.className = "text-green-600 text-[11px] font-bold text-center mt-4";
+                msg.classList.remove('hidden');
+
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1500);
+
+            } catch (error) {
+                let pesan = "Login Gagal!";
+                if(error.code === 'auth/user-not-found') pesan = "Email tidak terdaftar!";
+                if(error.code === 'auth/wrong-password') pesan = "Password salah!";
+                
+                msg.innerText = pesan;
+                msg.className = "text-red-600 text-[11px] font-bold text-center mt-4";
+                msg.classList.remove('hidden');
+                btnLogin.innerHTML = "Masuk Sekarang";
+                btnLogin.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

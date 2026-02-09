@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control Center - Arisan Luxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 120px; color: #334155; }
+
+        /* Header Luxe */
+        .main-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+            padding: 50px 25px 80px 25px;
+            border-radius: 0 0 50px 50px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Form Card */
+        .input-card {
+            background: white; border-radius: 35px; padding: 25px;
+            margin-bottom: 20px; border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 10px; margin-left: 5px; }
+        
+        input, select { 
+            width: 100%; padding: 16px 20px; border-radius: 20px; border: 1px solid #f1f5f9; 
+            background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e293b;
+            outline: none; transition: 0.3s ease;
+        }
+        input:focus, select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 102, 241, 0.05); }
+
+        .btn-update {
+            background: #1e293b; color: white; width: 100%; padding: 18px;
+            border-radius: 22px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 12px; transition: 0.3s; border: none;
+            box-shadow: 0 10px 20px rgba(30, 41, 59, 0.2);
+        }
+        .btn-update:active { transform: scale(0.96); }
+
+        /* Nav Bawah Luxe */
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            height: 75px; border-radius: 30px; display: flex; justify-content: space-around;
+            align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.12); z-index: 9999;
+        }
+        .nav-item { text-decoration: none; color: #94a3b8; text-align: center; font-size: 8px; font-weight: 800; }
+        .nav-item.active { color: #4f46e5; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        <div class="flex justify-between items-center mb-5">
+            <a href="dashboard.html" class="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center text-white"><i class="fa-solid fa-chevron-left"></i></a>
+            <h2 class="font-black text-lg uppercase tracking-tight">System Setting</h2>
+            <div class="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center text-white"><i class="fa-solid fa-calendar-check"></i></div>
+        </div>
+        <div class="text-center">
+            <span class="bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold tracking-[2px] border border-white/10 uppercase">Jadwal Undian</span>
+        </div>
+    </div>
+
+    <div class="p-6 -mt-10">
+        <div class="input-card">
+            <label>Urutan Periode</label>
+            <select id="periodeKe">
+                <option value="1">PEMENANG KE-1 (PERDANA)</option>
+                <script>
+                    for(let i=2; i<=13; i++) {
+                        document.write(`<option value="${i}">PEMENANG KE-${i}</option>`);
+                    }
+                </script>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="input-card">
+                <label>Tanggal</label>
+                <input type="date" id="tglUndian">
+            </div>
+            <div class="input-card">
+                <label>Waktu (Jam)</label>
+                <input type="time" id="jamUndian">
+            </div>
+        </div>
+
+        <button id="btnSimpan" class="btn-update mt-2">
+            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Update Jadwal
+        </button>
+    </div>
+
+    <nav class="nav-bar">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i>HOME</a>
+        <a href="bayar.html" class="nav-item"><i class="fa-solid fa-wallet"></i>BAYAR</a>
+        <a href="antrian.html" class="nav-item"><i class="fa-solid fa-list-ol"></i>ANTRIAN</a>
+        <a href="setting.html" class="nav-item active"><i class="fa-solid fa-gear"></i>SETTING</a>
+    </nav>

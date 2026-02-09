@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Monitoring Kas - Arisan Luxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        html, body { height: 100%; overflow-x: hidden; overflow-y: auto; scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 160px; color: #334155; }
+        .main-header { background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%); padding: 50px 25px 80px 25px; border-radius: 0 0 50px 50px; color: white; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); }
+        .card-member { background: white; border-radius: 35px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02); transition: all 0.3s ease; }
+        .progress-bg { background: #f1f5f9; height: 12px; border-radius: 12px; overflow: hidden; margin: 15px 0; border: 1px solid #f1f5f9; }
+        .progress-fill { background: linear-gradient(90deg, #4f46e5, #8b5cf6); height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px; }
+        .btn-lapor { background: #1e293b; color: white; width: 100%; padding: 16px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; box-shadow: 0 10px 20px rgba(30, 41, 59, 0.15); border: none; }
+        .btn-waiting { background: #fff7ed; color: #c2410c; width: 100%; padding: 16px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid #ffedd5; font-style: italic; }
+        .nav-bar { position: fixed; bottom: 25px; left: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); height: 75px; border-radius: 30px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.12); z-index: 9999; }
+        .nav-item { text-decoration: none; color: #94a3b8; text-align: center; font-size: 8px; font-weight: 800; }
+        .nav-item.active { color: #4f46e5; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <div class="flex justify-between items-center mb-5">
+            <a href="dashboard.html" class="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center text-white"><i class="fa-solid fa-chevron-left"></i></a>
+            <h2 class="font-black text-lg uppercase tracking-tight text-center flex-1">Kas Arisan</h2>
+            <div class="w-11"></div>
+        </div>
+        <div class="text-center">
+            <span class="bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold tracking-[2px] border border-white/10">PROGRES 13 PERIODE</span>
+        </div>
+    </div>
+
+    <div class="p-6 -mt-10" id="memberList">
+        <div class="text-center py-20 bg-white rounded-[35px] shadow-xl shadow-indigo-100/20">
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-600 mb-4"></i>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sinkronisasi Data...</p>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i>HOME</a>
+        <a href="bayar.html" class="nav-item active"><i class="fa-solid fa-wallet"></i>BAYAR</a>
+        <a href="antrian.html" class="nav-item"><i class="fa-solid fa-list-ol"></i>ANTRIAN</a>
+        <a href="pemenang.html" class="nav-item"><i class="fa-solid fa-crown"></i>WINNER</a>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
+            authDomain: "arisan-17397.firebaseapp.com",
+            projectId: "arisan-17397",
+            storageBucket: "arisan-17397.firebasestorage.app",
+            messagingSenderId: "12736886742",
+            appId: "1:12736886742:web:b6da8d1bd74ea5ae839677"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        onSnapshot(collection(db, "anggota"), (snapshot) => {
+            const container = document.getElementById('memberList');
+            container.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+                const dibayar = data.dibayar || 0;
+                const sisa = 13 - dibayar;
+                const persen = (dibayar / 13) * 100;
+
+                container.innerHTML += `
+                    <div class="card-member">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-black text-slate-800 text-sm uppercase">${data.nama}</h4>
+                                <p class="text-[10px] font-bold text-rose-500 uppercase mt-1">Sisa: ${sisa}x Pembayaran</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">${dibayar}/13</div>
+                                ${dibayar > 0 ? `<div onclick="koreksiData('${id}', ${dibayar}, '${data.nama}')" class="text-[9px] font-black text-slate-300 uppercase mt-2 cursor-pointer"><i class="fa-solid fa-rotate-left mr-1"></i>Koreksi</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="progress-bg"><div class="progress-fill" style="width: ${persen}%"></div></div>
+                        <div class="mt-2">
+                            ${data.statusKonfirmasi === 'tunggu' 
+                                ? `<button disabled class="btn-waiting"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Verifikasi Admin...</button>`
+                                : `<button onclick="laporBayar('${id}', '${data.nama}')" class="btn-lapor"><i class="fa-solid fa-paper-plane mr-2"></i>Lapor Bayar</button>`
+                            }
+                        </div>
+                    </div>`;
+            });
+        });
+
+        window.laporBayar = async (id, nama) => {
+            if(confirm(`Kirim laporan pembayaran untuk ${nama}?`)) {
+                await updateDoc(doc(db, "anggota", id), { statusKonfirmasi: "tunggu" });
+                alert("Laporan terkirim!");
+            }
+        };
+
+        window.koreksiData = async (id, current, nama) => {
+            if(confirm(`Batalkan 1 kali pembayaran untuk ${nama}?`)) {
+                try {
+                    await updateDoc(doc(db, "anggota", id), { dibayar: current - 1, statusBayar: false });
+                } catch (e) { alert("Gagal: " + e.message); }
+            }
+        };
+    </script>
+</body>
+</html>

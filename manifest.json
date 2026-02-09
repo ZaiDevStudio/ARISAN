@@ -1,0 +1,22 @@
+{
+  "name": "Arisan Pro Digital",
+  "short_name": "Arisan",
+  "description": "Aplikasi Manajemen Arisan Digital",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#F0F4F8",
+  "theme_color": "#68D391",
+  "icons": [
+    {
+      "src": "arisan.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "arisan.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

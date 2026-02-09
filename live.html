@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Draw - Arisan Luxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #6366f1; --accent: #f59e0b; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #020617;
+            background-image: radial-gradient(circle at 50% -20%, #1e1b4b, #020617);
+            color: white; min-height: 100vh; margin: 0; padding-bottom: 120px;
+        }
+
+        /* Live Container */
+        .live-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; padding: 25px; }
+        
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 45px;
+            padding: 40px 25px;
+            width: 100%; max-width: 360px;
+            text-align: center;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Timer Neon */
+        .timer-circle {
+            width: 180px; height: 180px; border-radius: 50%;
+            border: 6px solid rgba(245, 158, 11, 0.1);
+            border-top: 6px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 35px;
+            filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.3));
+            animation: spin-slow 4s linear infinite;
+        }
+        .timer-text { font-size: 44px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; animation: none; }
+
+        /* Status Badge */
+        .live-badge {
+            background: #ef4444; color: white; padding: 6px 18px;
+            border-radius: 100px; font-size: 10px; font-weight: 800;
+            letter-spacing: 3px; display: inline-flex; align-items: center;
+            gap: 10px; margin-bottom: 25px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Name Box */
+        .name-display {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px; padding: 25px; margin-top: 10px;
+        }
+
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+        
+        /* Nav Bar Dark */
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
+            height: 75px; border-radius: 30px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 9999;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item { text-decoration: none; color: #475569; text-align: center; font-size: 8px; font-weight: 800; }
+        .nav-item.active { color: #6366f1; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="live-wrapper">
+        <div id="screen-offline" class="text-center animate-pulse">
+            <div class="w-20 h-20 bg-slate-800/40 rounded-[30px] flex items-center justify-center mx-auto mb-6 border border-slate-700">
+                <i class="fa-solid fa-satellite-dish text-slate-500 text-3xl"></i>
+            </div>
+            <h1 class="text-xl font-black tracking-tight mb-2">STANDBY MODE</h1>
+            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-[3px]">Menunggu Jadwal Undian</p>
+        </div>
+
+        <div id="screen-live" class="hidden glass-card">
+            <div class="live-badge">
+                <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> LIVE NOW
+            </div>
+            
+            <div class="timer-circle">
+                <div id="timer" class="timer-text" style="transform: rotate(-360deg) !important;">00:60</div>
+            </div>
+
+            <div class="name-display">
+                <p class="text-slate-500 font-bold text-[9px] uppercase tracking-[4px] mb-4">Shuffling Participants</p>
+                <h2 id="random-name" class="text-2xl font-black italic text-indigo-400 uppercase tracking-tighter">---</h2>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i>HOME</a>
+        <a href="anggota.html" class="nav-item"><i class="fa-solid fa-users"></i>ANGGOTA</a>
+        <a href="live.html" class="nav-item active"><i class="fa-solid fa-tower-broadcast"></i>LIVE</a>
+        <a href="pemenang.html" class="nav-item"><i class="fa-solid fa-crown"></i>WINNER</a>
+    </nav>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
+            authDomain: "arisan-17397.firebaseapp.com",
+            projectId: "arisan-17397",
+            storageBucket: "arisan-17397.firebasestorage.app",
+            messagingSenderId: "12736886742",
+            appId: "1:12736886742:web:b6da8d1bd74ea5ae839677"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const screenOffline = document.getElementById('screen-offline');
+        const screenLive = document.getElementById('screen-live');
+        const timerEl = document.getElementById('timer');
+        const nameEl = document.getElementById('random-name');
+
+        let allNames = [];
+
+        // Mengambil daftar nama yang eligible (sudah bayar & belum menang)
+        const loadNames = async () => {
+            const q = query(collection(db, "anggota"), where("statusBayar", "==", true), where("sudahMenang", "==", false));
+            const snap = await getDocs(q);
+            allNames = snap.docs.map(d => d.data().nama);
+        };
+        loadNames();
+
+        // Mendengarkan status undian dari sistem
+        onSnapshot(doc(db, "sistem", "status_undian"), (snap) => {
+            const data = snap.data();
+            if (data && data.isRunning) {
+                screenOffline.classList.add('hidden');
+                screenLive.classList.remove('hidden');
+                startLiveTimer(data.endTime);
+            } else {
+                screenOffline.classList.remove('hidden');
+                screenLive.classList.add('hidden');
+            }
+        });
+
+        function startLiveTimer(endTime) {
+            const countdown = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Format Timer
+                timerEl.innerText = `00:${seconds < 10 ? '0' + seconds : seconds}`;
+                
+                // Animasi Acak Nama
+                if (allNames.length > 0) {
+                    nameEl.innerText = allNames[Math.floor(Math.random() * allNames.length)];
+                }
+
+                if (distance < 0) {
+                    clearInterval(countdown);
+                    timerEl.innerText = "00:00";
+                    nameEl.innerText = "MENENTUKAN...";
+                }
+            }, 100); // Shuffling cepat setiap 100ms
+        }
+    </script>
+</body>
+</html>
