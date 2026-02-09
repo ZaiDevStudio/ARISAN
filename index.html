@@ -3,58 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arisan Luxe - Eksklusif & Terpercaya</title>
+    <title>Arisan Luxe - Premium</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
+        /* Reset margin agar header mentok ke samping */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #1e1b4b; 
             height: 100vh; 
+            width: 100vw;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center;
             color: white;
             overflow: hidden;
+            position: relative;
         }
 
+        /* Efek Cahaya Latar Belakang */
         .bg-glow {
             position: absolute; width: 300px; height: 300px;
             background: rgba(79, 70, 229, 0.4);
             filter: blur(80px); border-radius: 50%; z-index: -1;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
-        .logo-container {
-            width: 150px; height: 150px;
+        /* Container Logo */
+        .logo-box {
+            width: 140px; height: 140px;
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            border-radius: 40px;
+            border-radius: 45px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            margin-bottom: 25px;
             border: 4px solid rgba(255,255,255,0.1);
+            animation: float 3s ease-in-out infinite;
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Tombol Masuk */
         .btn-entry {
             background: white; color: #1e1b4b;
-            padding: 18px 40px; border-radius: 20px;
+            padding: 20px 50px; border-radius: 25px;
             font-weight: 800; text-transform: uppercase;
-            letter-spacing: 2px; font-size: 12px;
+            letter-spacing: 2px; font-size: 13px;
             transition: 0.3s; text-decoration: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            display: none; /* Disembunyikan dulu saat cek login */
         }
         .btn-entry:active { transform: scale(0.95); }
 
+        /* Loader Loading */
         .loader {
-            width: 20px; height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
+            width: 30px; height: 30px;
+            border: 4px solid rgba(255,255,255,0.2);
             border-radius: 50%; border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            display: none;
+            animation: spin 1s linear infinite;
         }
-
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -62,24 +84,25 @@
 
     <div class="bg-glow"></div>
 
-    <div class="logo-container">
-        <i class="fa-solid fa-crown text-6xl text-white"></i>
+    <div class="logo-box">
+        <i class="fa-solid fa-rupiah-sign text-5xl text-white"></i>
     </div>
 
-    <h1 class="text-3xl font-black mb-2 tracking-tighter">ARISAN LUXE</h1>
-    <p class="text-indigo-300 text-xs font-bold uppercase tracking-[4px] mb-10">Premium Experience</p>
+    <h1 class="text-4xl font-black mb-1 tracking-tighter">ARISAN</h1>
+    <p class="text-indigo-400 text-[10px] font-bold uppercase tracking-[5px] mb-12">Luxury Edition</p>
 
-    <div id="check-status">
+    <div id="check-status" class="flex flex-col items-center">
         <div class="loader" id="loading"></div>
         <a href="login.html" id="btn-start" class="btn-entry">Masuk Aplikasi</a>
     </div>
 
-    <p class="absolute bottom-10 text-[10px] text-indigo-400 font-bold uppercase tracking-widest">v3.0 Stable Version</p>
+    <p class="absolute bottom-8 text-[9px] text-indigo-500 font-bold uppercase tracking-[3px]">Powered by Firebase & Github</p>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // Konfigurasi Firebase kamu
         const firebaseConfig = {
             apiKey: "AIzaSyDuAkqz-1dDcBhL5iYppX25pM5sF7LX8CQ",
             authDomain: "arisan-17397.firebaseapp.com",
@@ -92,21 +115,18 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        const btn = document.getElementById('btn-start');
+        const btnStart = document.getElementById('btn-start');
         const loader = document.getElementById('loading');
 
-        // Tampilkan loader saat mengecek status login
-        btn.style.display = 'none';
-        loader.style.display = 'block';
-
+        // Cek status login secara otomatis
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Jika sudah login, lempar ke dashboard
+                // Jika sudah login, langsung ke Dashboard
                 window.location.href = "dashboard.html";
             } else {
                 // Jika belum login, tampilkan tombol masuk
                 loader.style.display = 'none';
-                btn.style.display = 'inline-block';
+                btnStart.style.display = 'block';
             }
         });
     </script>
