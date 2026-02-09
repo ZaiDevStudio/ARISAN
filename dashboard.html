@@ -204,5 +204,37 @@
             document.getElementById('statBelum').innerText = b;
         });
     </script>
+    <div id="install-area" class="px-6 mb-4 hidden">
+    <button id="btn-install-pwa" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg">
+        <i class="fa-solid fa-download mr-2"></i> Instal Aplikasi di HP
+    </button>
+</div>
+
+<script>
+    let deferredPrompt;
+    const installArea = document.getElementById('install-area');
+    const btnInstall = document.getElementById('btn-install-pwa');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Mencegah browser menampilkan prompt otomatis
+        e.preventDefault();
+        deferredPrompt = e;
+        // Tampilkan area tombol instal
+        installArea.classList.remove('hidden');
+    });
+
+    btnInstall.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User menginstal aplikasi');
+            }
+            deferredPrompt = null;
+            installArea.classList.add('hidden');
+        }
+    });
+</script>
+    
 </body>
 </html>
